@@ -1,17 +1,19 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 import subprocess
 
-lcc_path = input('Enter path to lcc from GBDK here. If nothing is inputted, will default to "/opt/gbdk/bin/lcc"\n')
+gbdk_path = input('Enter path to GBDK here. If nothing is inputted, will default to "/opt/gbdk"\n')
 
-if lcc_path.strip() == "":
-    lcc_path = "/opt/gbdk/bin/lcc"
-print(f'Using {lcc_path}. Checking path...')
+if gbdk_path.strip() == "":
+    gbdk_path = "/opt/gbdk"
+print(f'Using {gbdk_path}. Checking path...')
 
-if not os.path.isfile(lcc_path):
-    print('Could not find lcc. Make sure you have installed GDBK - https://gbdk-2020.github.io/gbdk-2020/')
+if not os.path.isdir(f'{gbdk_path}'):
+    print('Could not find GBDK. Make sure you have installed it, instructions here - https://gbdk-2020.github.io/gbdk-2020/')
     sys.exit(1)
-print('Found lcc.')
+print('Found GBDK.')
 
 current_dir = os.getcwd()
 
@@ -36,10 +38,11 @@ build = f"""
 rm *.gb
 
 # compile .c files into .o files
-{lcc_path} -c -o main.o main.c
+# {f'{gbdk_path}/bin/lcc'} -c -o main.o main.c
+# note - in future, create build.py script which will create object files in output then link and compile with lcc
 
 # compile .gb file from compiled .o files
-{lcc_path} -o {output}.gb main.o
+{f'{gbdk_path}/bin/lcc'} -o {output}.gb output/*.o
 
 # remove extra files created during compilation
 rm *.asm
@@ -57,6 +60,7 @@ gitignore = """
 *.o
 *.sym
 setup.py
+debug.py
 """
 
 main = """
@@ -76,6 +80,36 @@ Check out https://gbdk-2020.github.io/gbdk-2020/ for documentation.
 Script by https://github.com/adm-j/
 """
 
+tasks = """
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build GB Rom",
+            "type": "shell",
+            "command": "./build.sh"
+        }
+    ]
+}
+"""
+
+compiler_settings = """
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/opt/gbdk/**"
+            ]
+        }
+    ],
+
+}
+"""
+
 print('creating .gitignore')
 gitignore_file = open(current_dir + '/.gitignore', 'w')
 gitignore_file.writelines(gitignore.strip())
@@ -93,10 +127,30 @@ main_file.writelines(main.strip())
 main_file.close()
 
 print('creating readme')
-readme_file = open(current_dir + '/README.md', 'w')
+readme_file = open(current_dir + '/README', 'w')
 readme_file.writelines(readme.strip())
 readme_file.close()
 
+print('creating vscode specific settings for GBDK...')
+os.mkdir('.vscode')
+print('creating tasks.json')
+tasks_file = open(current_dir + '/.vscode/tasks.json', 'w')
+tasks_file.writelines(tasks.strip())
+tasks_file.close()
+
+print("creating c_pp_properties.json (for use with the C/C++ extention for IntelliSense)")
+compiler_settings_file = open(current_dir + '/.vscode/c_cpp_properties.json', 'w')
+compiler_settings_file.writelines(compiler_settings.strip())
+compiler_settings_file.close()
+
+print('creating directories')
+os.mkdir('graphics')
+os.mkdir('headers')
+os.mkdir('lib')
+
 print('Creating git repository')
 subprocess.run(['git', 'init'])
+print('Making inital commit')
+subprocess.run(['git', 'add', '.'])
+subprocess.run(['git', 'commit', '-m"init"'])
 print(f'Successfully created project {output}!')
