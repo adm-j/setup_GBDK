@@ -13,3 +13,7 @@ project and run it. Make sure you install GBDK first - see https://gbdk-2020.git
 The script will ask you a few questions then set things accordingly.
 
 It's a bit bare bones right now, that may change as I learn more.
+
+### **TODO**
+I have now added a python script which should allow for compiling a whole project, but when I
+have time to get my head around it I really want to have a makefile instead!

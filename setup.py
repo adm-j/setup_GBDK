@@ -17,7 +17,7 @@ print('Found GBDK.')
 
 current_dir = os.getcwd()
 
-continue_setup = input(f'Current directory is {current_dir}. If this is not where you want files to be setup, enter n, otherwise enter any other key.\n')
+continue_setup = input(f'Current directory is {current_dir}. Press n to cancel, or any other key to continue.\n')
 if continue_setup.strip() == "n" or continue_setup == "N":
     print('Ending script...')
     sys.exit(1)
@@ -59,8 +59,11 @@ gitignore = """
 *.ihx
 *.o
 *.sym
+release
+debug
 setup.py
-debug.py
+make.py
+gbconfig.json
 """
 
 main = """
@@ -110,16 +113,28 @@ compiler_settings = """
 }
 """
 
+config = f"""
+{
+    "gbdk_path": "{gbdk_path}",
+    "name": "{output}"
+}
+"""
+
+print('creating gbconfig.json')
+config_file = open(current_dir + '/gbconfig.json', 'w')
+config_file.writelines(config.strip())
+config_file.close()
+
 print('creating .gitignore')
 gitignore_file = open(current_dir + '/.gitignore', 'w')
 gitignore_file.writelines(gitignore.strip())
 gitignore_file.close()
 
-print('creating build.sh')
-build_file = open(current_dir + '/build.sh', 'w')
-build_file.writelines(build.strip())
-build_file.close()
-subprocess.run(['chmod', '+x', 'build.sh']) # automatically make it executeable
+# print('creating build.sh')
+# build_file = open(current_dir + '/build.sh', 'w')
+# build_file.writelines(build.strip())
+# build_file.close()
+# subprocess.run(['chmod', '+x', 'build.sh']) # automatically make it executeable
 
 print('creating main.c')
 main_file = open(current_dir + '/main.c', 'w')
@@ -146,7 +161,7 @@ compiler_settings_file.close()
 print('creating directories')
 os.mkdir('graphics')
 os.mkdir('headers')
-os.mkdir('lib')
+os.mkdir('src')
 
 print('Creating git repository')
 subprocess.run(['git', 'init'])
