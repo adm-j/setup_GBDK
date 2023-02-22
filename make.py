@@ -42,5 +42,6 @@ for root, dirs, files in os.walk(cur_path):
             else:
                 subprocess.run([config['gbdk_path'], "-c", "-o", f"{cur_path}/{output}/{name.replace('.c', '.o')}", os.path.join(root, name)])
 
+print(f'Compiling object files')
 subprocess.run(f"{config['gbdk_path']} {debug}-o {output}/{config['name']}.gb {cur_path}/{output}/*.o", shell=True)
 print('finished')

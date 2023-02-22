@@ -114,10 +114,10 @@ compiler_settings = """
 """
 
 config = f"""
-{
-    "gbdk_path": "{gbdk_path}",
+{{
+    "gbdk_path": "{gbdk_path}/bin/lcc",
     "name": "{output}"
-}
+}}
 """
 
 print('creating gbconfig.json')
