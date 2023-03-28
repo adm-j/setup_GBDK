@@ -3,6 +3,7 @@
 import os
 import sys
 import subprocess
+import json
 
 gbdk_path = input('Enter path to GBDK here. If nothing is inputted, will default to "/opt/gbdk"\n')
 
@@ -120,6 +121,53 @@ config = f"""
 }}
 """
 
+# vscode_test = json.dumps({
+#         "version": "0.2.0",
+#     "configurations": [
+#         {
+#             "type": "emulicious-debugger",
+#             "request": "launch",
+#             "name": "Launch in Emulicious",
+#             "program": "${workspaceFolder}/debug/bin/snake.gb",
+#             "port": 58870,
+#             "stopOnEntry": True
+#         }
+#     ]
+# })
+
+# vscode_launch = f""" //todo: fix this
+# {{
+#     // Use IntelliSense to learn about possible attributes.
+#     // Hover to view descriptions of existing attributes.
+#     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+#     "version": "0.2.0",
+#     "configurations": [
+#         {
+#             "type": "emulicious-debugger",
+#             "request": "launch",
+#             "name": "Launch in Emulicious",
+#             "program": "${"workspaceFolder"}/debug/bin/{output}.gb",
+#             "port": 58870,
+#             "stopOnEntry": true
+#         }
+#     ]
+# }}
+# """
+
+def create_file(filename, filedata):
+    print(f'creating {filename}')
+    file = open(current_dir + f"/{filename}", 'w')
+    file.writelines(filedata.strip())
+    file.close()
+
+create_file("gbconfig.json", config)
+create_file(".gitignore", gitignore)
+# create_file('launch.json', vscode_launch)
+create_file('main.c', main)
+create_file("readme", readme)
+create_file('tasks.json', tasks)
+create_file('c_pp_properties.json', compiler_settings)
+
 print('creating gbconfig.json')
 config_file = open(current_dir + '/gbconfig.json', 'w')
 config_file.writelines(config.strip())
@@ -129,6 +177,11 @@ print('creating .gitignore')
 gitignore_file = open(current_dir + '/.gitignore', 'w')
 gitignore_file.writelines(gitignore.strip())
 gitignore_file.close()
+
+# print('creating vscode launch.json')
+# vscode_launch_file = open(current_dir + '/launch.json', 'w')
+# vscode_launch_file.writelines(vscode_launch.strip())
+# vscode_launch_file.close()
 
 # print('creating build.sh')
 # build_file = open(current_dir + '/build.sh', 'w')
